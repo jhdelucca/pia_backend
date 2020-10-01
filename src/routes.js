@@ -8,6 +8,7 @@ const routes = express.Router();
 
 routes.post("/usuarios" , UserController.create);
 routes.post("/session" , UserController.logar);
+routes.get("/usuarios" , UserController.index);
 
 routes.get("/orcamento" , OrcamentoController.index);
 routes.post("/orcamento" , OrcamentoController.create);
