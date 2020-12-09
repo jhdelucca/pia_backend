@@ -66,6 +66,7 @@ module.exports = {
         const { titulo, valor } = request.body
         const usr_id = request.headers.authorization;
         const { centro_custo_id, gasto_id } = request.query;
+        const valorNumerico = parseFloat(valor);
 
         const trx = await connection.transaction();
 
@@ -79,7 +80,8 @@ module.exports = {
         if (!user) {
             return response.status(401).json({ error: 'Operation not permited' });
         }
-
+        
+        
         const [id] = await trx('gastos_detalhados').insert({
             gasto_id,
             centro_custo_id,
@@ -94,7 +96,7 @@ module.exports = {
         }
 
         await trx('gastos').where('id',gasto_id).update({
-            valorGasto: gasto.valorGasto + valor,
+            valorGasto: gasto.valorGasto + valorNumerico,
         });
 
         const centro_custo = await trx('centro_custo').where('id',centro_custo_id).select('*').first();
@@ -106,9 +108,9 @@ module.exports = {
         console.log(centro_custo.tipo);
 
         if(centro_custo.tipo === 'CC') {
-            centro_custo.valorCusto = centro_custo.valorCusto - valor;
+            centro_custo.valorCusto = centro_custo.valorCusto - valorNumerico;
         }else{
-            centro_custo.valorCusto = centro_custo.valorCusto + valor;    
+            centro_custo.valorCusto = centro_custo.valorCusto + valorNumerico;    
         }
 
         await trx('centro_custo').where('id',centro_custo_id).update({
